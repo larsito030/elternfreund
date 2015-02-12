@@ -1,5 +1,51 @@
 <?php
 
+try {
+
+	function get_sql_data($table,$param) {
+//array of columns pertaining to each of the database tables
+			if($table == 'users') {
+				$table = array('first_name', 'last_name', 'Status' , 'about_me', 'dob','password', 'email', 'gender');}		
+			elseif($table =='children') {
+				$table = array('child_name', 'child_dob', 'child_gender');}
+			elseif($table == 'search_profile') {
+				$table = array('flexibility', 'frequency');}
+			elseif($table == 'users_partner') {
+				$table = array('partner_gender','partner_first_name', 'partner_profession');}
+			elseif($table =='users_address') {
+			 	$table = array('street', 'number', 'zip', 'location');}
+
+			foreach($_SESSION['post'] as $key => $value) {
+		 			if(in_array($key, $table)) {	
+							$fields[] = $key;
+							$values[] = $value;
+					}elseif($table =='$times_offered') {
+							if(substr($key,0,5) == 'offer'){
+									$fields[] = $key;
+									$values[] = $value;}
+					}elseif($table == '$times_requested'){
+							if(substr($key,0,7) == 'request'){
+									$fields[] = $key;
+									$values[] = $value;
+							}	
+					}else{	unset($out[$key]);		}
+		 	}
+		 			$db_fields = implode(', ', $fields);
+					$db_values = "'".implode("', '", $values)."'";
+
+		 			if($param == 'key'){
+					return $db_fields;}
+		 			elseif($param =='value') {
+					return $db_values;}
+		 			else {echo "Please enter 2nd parameter!";}
+	}
+	
+} catch (Exception $e) {
+	$e->getMessage();
+}
+	
+	
+
 
 
 function validationCheck($required){

@@ -16,21 +16,15 @@
 //arrays of colums which are part of the respective tables...
 
 
-try {if(/*empty($missing) && */isset($_POST['step4'])){
+if(/*empty($missing) && */isset($_POST['step4'])){
 		foreach($_POST as $key => $value){
 				if(!empty($value)){
 						$_SESSION['post'][$key] = $_POST[$key];
 										}
 			}
-		$fields = implode(', ', $users_cols);
-		$values = "'".implode("', '", $users_values)."'";
-		$query_users = $db->prepare("INSERT INTO users (?) VALUES (?)");
-		$query_users->execute(array($fields, $value));
-}
-	
-} catch (Exception $e) {
-	echo $e->getMessage();
-}
+	}
+		
+
 
 
 	
@@ -40,52 +34,26 @@ try {if(/*empty($missing) && */isset($_POST['step4'])){
 	//$query = implode(', ', $out);
 	//print_r($query);
 	ini_set('display_errors', 'on');
+	$sql = get_sql_data(children, 'value');
+	echo $sql;
 
 //This functions retrieves all the  keys or values from the SESSION array
 //which are supposed to be inserted into a specific table the name of which gets passed
 //into the function as an argument. Arguments must be passed in as a variable!!!
 // 1st parameter: targeted database table
 // 2nd parameter: either 'key' or 'value'
-function get_sql_data($table,$param) {
-//array of columns pertaining to each of the database tables
-	$users = array('first_name', 'last_name', 'Status' , 'about_me', 'dob','password', 'email', 'gender');		
-	$children = array('child_name', 'child_dob', 'child_gender');	
-	$search_profile = array('flexibility', 'frequency');
-	$users_partner = array('partner_gender','partner_first_name', 'partner_profession');
 
-		foreach($_SESSION['post'] as $key => $value) {
-		 		if(in_array($key, $table) {	
-						$fields[] = $key;
-						$values[] = $value;}
-				elseif($table =='$times_offered') {
-						if(substr($key,0,5) == 'offer'){
-								$fields[] = $key;
-								$values[] = $value;
-				}elseif($table == '$times_requested'){
-						if(substr($key,0,7) == 'request'){
-								$fields[] = $key;
-								$values[] = $value;
-							}	
-				}else{	unset($out[$key]);		}
-			}
-	$db_fields = implode(', ', $fields);
-	$db_values = "'".implode("', '", $values)."'";
 
-	if($param == 'key'){
-		return $db_fields;
-	} elseif($param =='value') {
-		return $db_values;
-	} else {echo "Please enter 2nd parameter!"}
 
-}
+
 				
-function register_user($db){
+/*function register_user($db){
 		$tables = array('$users', '$children', '$search_profile', '$times_requested', '$times_offered', '$users_partner', '$user_address');
 		foreach($tables as $table){
 				$fields = get_sql_data($table, 'key');
 				$values = get_sql_data($table, 'value');
-				$query_users = $db->prepare("INSERT INTO users (?) VALUES (?)");
-				$query_users->execute(array($fields, $values));
+				$query_users = $db->prepare("INSERT INTO ? (?) VALUES (?)");
+				$query_users->execute(array($table, $fields, $values));
 		}
 		
 
