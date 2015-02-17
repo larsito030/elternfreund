@@ -1,48 +1,144 @@
 <?php
 
-try {
 
-	function get_sql_data($table,$param) {
+	function get_sql_data($table,$param,$db) {
 //array of columns pertaining to each of the database tables
 			if($table == 'users') {
-				$table = array('first_name', 'last_name', 'Status' , 'about_me', 'dob','password', 'email', 'gender');}		
+				$cols = array('first_name', 'last_name', 'Status' , 'about_me', 'dob','password', 'email', 'gender');}		
 			elseif($table =='children') {
-				$table = array('child_name', 'child_dob', 'child_gender');}
+				$cols = array('child_name', 'child_dob', 'child_gender');}
 			elseif($table == 'search_profile') {
-				$table = array('flexibility', 'frequency');}
+				$cols = array('flexibility', 'frequency');}
 			elseif($table == 'users_partner') {
-				$table = array('partner_gender','partner_first_name', 'partner_profession');}
-			elseif($table =='users_address') {
-			 	$table = array('street', 'number', 'zip', 'location');}
+				$cols = array('partner_gender','partner_first_name', 'partner_profession');}
+			elseif($table =='user_address') {
+			 	$cols = array('street', 'number', 'zip', 'location');}
 
 			foreach($_SESSION['post'] as $key => $value) {
-		 			if(in_array($key, $table)) {	
+		 			if(in_array($key, $cols)) {	
 							$fields[] = $key;
 							$values[] = $value;
-					}elseif($table =='$times_offered') {
+					}elseif($table =='times_offered') {
 							if(substr($key,0,5) == 'offer'){
 									$fields[] = $key;
 									$values[] = $value;}
-					}elseif($table == '$times_requested'){
+					}elseif($table == 'times_requested'){
 							if(substr($key,0,7) == 'request'){
 									$fields[] = $key;
 									$values[] = $value;
 							}	
-					}else{	unset($out[$key]);		}
-		 	}
-		 			$db_fields = implode(', ', $fields);
-					$db_values = "'".implode("', '", $values)."'";
-
-		 			if($param == 'key'){
-					return $db_fields;}
+					}//else{	unset($out[$key]);		}
+		 	}		
+					if($table == 'users') {	
+		 					$db_fields = "(".implode(', ', $fields).")";	
+							$db_values ="('".implode("', '", $values)."')";
+					} else {	 
+							$user_id = get_user_id($db);
+							$db_fields ="(".implode(', ', $fields).", user_id)";	
+							$db_values ="('".implode("', '", $values)."', ".$user_id.")";
+					} 	if($param == 'key'){
+							return $db_fields;}
 		 			elseif($param =='value') {
-					return $db_values;}
+							return $db_values;}
 		 			else {echo "Please enter 2nd parameter!";}
 	}
-	
-} catch (Exception $e) {
-	$e->getMessage();
+//debugging
+//test1: foreach loop commented out; $table = 'user';  => not working!
+//test 2: table name in sql statement hard coded; => not working!
+//test 3: all parameters in sql statement hard coded; => working!
+//test 4: all parameters in sql statement hard coded except for table name; => working!
+//test 5: table name and field name passed into sql statement as variable, values hard coded; => working!
+//test 6: bug fixed: accidentally 2 single quotes passed before concatenated closing bracket in §db_fields!!!
+//test 7: uncommenting foreach loop in register_user();
+
+//debugging part 2: unable to insert data into children table
+//test1: uncommenting code for user_id insertion; => not working;
+//test2: uncommenting $fields ans $values;
+//test3: all parameters in sql statement hard coded; => working!
+//test4: table name and values hard coded /field name passed as parameter; => working!
+//test5: field name and values passed in as variables / table name hard coded; => working!
+
+//try {
+	/*function register_user($db){
+		$tables = array('users', 'children', 'search_profile', 'times_requested', 'times_offered', 'users_partner', 'user_address');
+		foreach($tables as $table){
+				$fields = get_sql_data($table, 'key', $db);
+				$values = get_sql_data($table, 'value', $db);
+				//$field_array = explode(', ', $sql_string);
+				//$field = substr($field_array[1], 0, -3);
+				//return $fields;
+				//print_r($field_array);
+				//echo $field;
+				
+					//	if($table == "times_requested" || $table == "times_offered") {
+						//		foreach($values as $value) {
+										$query_users = $db->prepare("INSERT INTO $table $fields VALUES $values");
+										$query_users->execute();
+									//	}
+				/*	}	else {
+								$query_users = $db->prepare("INSERT INTO $table $fields VALUES $values");
+								$query_users->execute();
+							}
+								
+						
+						}
+				
+		}	*/
+//} catch (Exception $e) {
+	//$e->getMessage();
+//}
+//DEBUGGING
+//problem: function register_user does not output fields or values for times_offered and times_requested!
+//test 1: $tables array and foreach loop commented out; 1st argument of get_sql_data hard coded as "children"! => working!
+//test 2: $tables array and foreach loop commented out; 1st argument of get_sql_data hard coded as "times_requested! =>not working!
+//test 3: table variable initialized with "times_requested" within function; => not working!
+//test 4: table variable initialized with "children" within function; => working!
+//test 5: table variable initialized with "times_requested" within function / $field_array and $field commented out; => not working!
+//test 6: evrything uncommented in tables array except for times_requested and times_offered; =>	
+
+
+
+	function register_user($db){
+		$tables = array('users', 'children', 'search_profile', 'times_requested', 'times_offered', 'users_partner', 'user_address');
+		foreach($tables as $table){
+				//$table = "times_requested";
+				$fields = get_sql_data($table, 'key', $db);
+				$values = get_sql_data($table, 'value', $db);
+				
+				//$test[] = $field;
+						if($table == "times_requested" || $table == "times_offered") {
+								$field_array = explode(', ', $fields);
+								$field = substr($field_array[1], 0, -3)."_type";
+										foreach($values as $value) {
+												$query_users = $db->prepare("INSERT INTO $table $field VALUES $value");
+												$query_users->execute();
+												}
+					}	else {
+								$query_users = $db->prepare("INSERT INTO $table $fields VALUES $values");
+								$query_users->execute();
+							}
+								
+						
+						}
+				//var_dump($test);
+		}		
+
+
+		
+
+
+function get_user_id($db) {
+		$user_id = $db->prepare("SELECT user_id FROM users ORDER BY user_id DESC LIMIT 1");
+		$user_id->execute();
+		$last_id = $user_id->fetch();
+		$last_id = $last_id[0];
+		$num = $last_id + 1.;
+		$user_id = "'".$num."'";
+		return $user_id;
 }
+
+
+
 	
 	
 
