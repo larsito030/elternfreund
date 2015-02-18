@@ -3,8 +3,10 @@
 
 	function get_sql_data($table,$param,$db) {
 //array of columns pertaining to each of the database tables
+			
+
 			if($table == 'users') {
-				$cols = array('first_name', 'last_name', 'Status' , 'about_me', 'dob','password', 'email', 'gender');}		
+				$cols = array('first_name', 'last_name', 'Status' , 'about_me', 'profession', 'dob','password', 'email', 'gender');}		
 			elseif($table =='children') {
 				$cols = array('child_name', 'child_dob', 'child_gender');}
 			elseif($table == 'search_profile') {
@@ -29,118 +31,59 @@
 							}	
 					}//else{	unset($out[$key]);		}
 		 	}		
-					if($table == 'users') {	
+		 			if($table == 'times_requested' || $table == 'times_offered') {
+		 					//$fields[] = 'user_id';
+		 					$db_fields = $fields;
+		 					//$values[] = $user_id;
+		 					$db_values = $values;
+				}elseif($table == 'users') {	
 		 					$db_fields = "(".implode(', ', $fields).")";	
 							$db_values ="('".implode("', '", $values)."')";
-					} else {	 
-							$user_id = get_user_id($db);
+				} else {	 
+							$user_id = strval(get_user_id($db));
 							$db_fields ="(".implode(', ', $fields).", user_id)";	
-							$db_values ="('".implode("', '", $values)."', ".$user_id.")";
+							$db_values ="('".implode("', '", $values)."', '".$user_id."')";
 					} 	if($param == 'key'){
 							return $db_fields;}
 		 			elseif($param =='value') {
 							return $db_values;}
 		 			else {echo "Please enter 2nd parameter!";}
 	}
-//debugging
-//test1: foreach loop commented out; $table = 'user';  => not working!
-//test 2: table name in sql statement hard coded; => not working!
-//test 3: all parameters in sql statement hard coded; => working!
-//test 4: all parameters in sql statement hard coded except for table name; => working!
-//test 5: table name and field name passed into sql statement as variable, values hard coded; => working!
-//test 6: bug fixed: accidentally 2 single quotes passed before concatenated closing bracket in §db_fields!!!
-//test 7: uncommenting foreach loop in register_user();
-
-//debugging part 2: unable to insert data into children table
-//test1: uncommenting code for user_id insertion; => not working;
-//test2: uncommenting $fields ans $values;
-//test3: all parameters in sql statement hard coded; => working!
-//test4: table name and values hard coded /field name passed as parameter; => working!
-//test5: field name and values passed in as variables / table name hard coded; => working!
-
-//try {
-	/*function register_user($db){
-		$tables = array('users', 'children', 'search_profile', 'times_requested', 'times_offered', 'users_partner', 'user_address');
-		foreach($tables as $table){
-				$fields = get_sql_data($table, 'key', $db);
-				$values = get_sql_data($table, 'value', $db);
-				//$field_array = explode(', ', $sql_string);
-				//$field = substr($field_array[1], 0, -3);
-				//return $fields;
-				//print_r($field_array);
-				//echo $field;
-				
-					//	if($table == "times_requested" || $table == "times_offered") {
-						//		foreach($values as $value) {
-										$query_users = $db->prepare("INSERT INTO $table $fields VALUES $values");
-										$query_users->execute();
-									//	}
-				/*	}	else {
-								$query_users = $db->prepare("INSERT INTO $table $fields VALUES $values");
-								$query_users->execute();
-							}
-								
-						
-						}
-				
-		}	*/
-//} catch (Exception $e) {
-	//$e->getMessage();
-//}
-//DEBUGGING
-//problem: function register_user does not output fields or values for times_offered and times_requested!
-//test 1: $tables array and foreach loop commented out; 1st argument of get_sql_data hard coded as "children"! => working!
-//test 2: $tables array and foreach loop commented out; 1st argument of get_sql_data hard coded as "times_requested! =>not working!
-//test 3: table variable initialized with "times_requested" within function; => not working!
-//test 4: table variable initialized with "children" within function; => working!
-//test 5: table variable initialized with "times_requested" within function / $field_array and $field commented out; => not working!
-//test 6: evrything uncommented in tables array except for times_requested and times_offered; =>	
-
 
 
 	function register_user($db){
 		$tables = array('users', 'children', 'search_profile', 'times_requested', 'times_offered', 'users_partner', 'user_address');
 		foreach($tables as $table){
-				//$table = "times_requested";
 				$fields = get_sql_data($table, 'key', $db);
 				$values = get_sql_data($table, 'value', $db);
-				
-				//$test[] = $field;
-						if($table == "times_requested" || $table == "times_offered") {
-								$field_array = explode(', ', $fields);
-								$field = substr($field_array[1], 0, -3)."_type";
+						if($table == 'times_requested' || $table == 'times_offered') {
+								$field = "(".substr($fields[1], 0, -3)."_type, user_id)";
 										foreach($values as $value) {
+												$user_id = strval(get_user_id($db));
+												$value = "('".$value."', '".$user_id."')";
+												$out[] = $value;
 												$query_users = $db->prepare("INSERT INTO $table $field VALUES $value");
 												$query_users->execute();
 												}
-					}	else {
+						}else {
 								$query_users = $db->prepare("INSERT INTO $table $fields VALUES $values");
 								$query_users->execute();
-							}
-								
-						
-						}
-				//var_dump($test);
+							} 
+					  //echo $out;
+					  //print_r($out);
+					} //var_dump($out);
 		}		
-
-
-		
-
+//test function
 
 function get_user_id($db) {
 		$user_id = $db->prepare("SELECT user_id FROM users ORDER BY user_id DESC LIMIT 1");
 		$user_id->execute();
 		$last_id = $user_id->fetch();
-		$last_id = $last_id[0];
-		$num = $last_id + 1.;
-		$user_id = "'".$num."'";
+		$user_id = $last_id[0];
+		//$user_id = $last_id + 1.;
 		return $user_id;
 }
 
-
-
-	
-	
 
 
 
