@@ -1,12 +1,51 @@
 <?php
 
+//test1: offer_type in sql statement hard coded; foreach-loop commented out;
 
-	function get_sql_data($table,$param,$db) {
+//1. Get an array "$total" of all user_ids that match our request! => COMPLETED!
+//2. Get an array "$users" in which all duplicate user_ids have been removed! 
+//3. Count number of identical user_ids in $total and store the result in the variable "$score" for each matching partner!
+//4. Insert data into "matching score" table!
+//		
+	function sub_score($db, $user_id, $param) {
+			$test = "SELECT ".$param."_type FROM times_".$param."ed WHERE user_id = $user_id";
+			$data = $db->prepare("SELECT ".$param."_type FROM times_".$param."ed WHERE user_id = $user_id");
+			$data->execute();
+			$results = $data->fetchAll();
+			foreach($results as $result) {
+					$type = ($param == 'request') ? 'offer' : 'request';
+					$results2 = $db->prepare("SELECT user_id FROM times_".$type."ed WHERE ".$type."_type = '$result[0]'");
+					$results2->execute();
+					while ($row = $results2->fetch(PDO::FETCH_NUM)) {
+							$string .= $row[0]." ";
+				}
+			}
+			$total = explode(" ", $string);
+			$matches = array_unique($total);
+			$scores = array_count_values($total);
+			return $scores;
+	}
+
+	function score($db, $user_id){
+			$offer_match = array_keys(sub_score($db, $user_id, 'offer'));
+			$request_match = array_keys(sub_score($db, $user_id, 'request'));
+			$total_matches = array_unique(array_merge($offer_match, $request_match));
+			$score = array_map("min_score", $total_matches); 
+			return $score;
+	}
+
+	function min_score($match) {
+			global $db;
+			$offer = sub_score($db, 50, 'offer');
+			$request = sub_score($db, 50, 'request');
+			$score = min($offer[$match], $request[$match]);
+			return $score;
+	}
+
+	function get_session_data($table,$param,$type, $db) {
 //array of columns pertaining to each of the database tables
-			
-
 			if($table == 'users') {
-				$cols = array('first_name', 'last_name', 'Status' , 'about_me', 'profession', 'dob','password', 'email', 'gender');}		
+				$cols = array('first_name', 'last_name', 'Status' , 'about_me', 'profession', 'dob','password', 'email', 'gender', 'profile_pic', 'pic_2', 'pic_3');																										}		
 			elseif($table =='children') {
 				$cols = array('child_name', 'child_dob', 'child_gender');}
 			elseif($table == 'search_profile') {
@@ -16,10 +55,17 @@
 			elseif($table =='user_address') {
 			 	$cols = array('street', 'number', 'zip', 'location');}
 
+
 			foreach($_SESSION['post'] as $key => $value) {
 		 			if(in_array($key, $cols)) {	
-							$fields[] = $key;
-							$values[] = $value;
+		 					//if(is_array($key)){
+		 					if(strpos($key, 'pic') !== false){
+		 							$fields[] = $key;
+		 							$values[] = get_file_path($key, $value);
+		 							$tmp[] = $value['tmp_name'];
+		 					} else {
+									$fields[] = $key;
+									$values[] = $value;}
 					}elseif($table =='times_offered') {
 							if(substr($key,0,5) == 'offer'){
 									$fields[] = $key;
@@ -31,10 +77,8 @@
 							}	
 					}//else{	unset($out[$key]);		}
 		 	}		
-		 			if($table == 'times_requested' || $table == 'times_offered') {
-		 					//$fields[] = 'user_id';
+		 	if(strpos($fields[0], 'times')) {
 		 					$db_fields = $fields;
-		 					//$values[] = $user_id;
 		 					$db_values = $values;
 				}elseif($table == 'users') {	
 		 					$db_fields = "(".implode(', ', $fields).")";	
@@ -43,19 +87,51 @@
 							$user_id = strval(get_user_id($db));
 							$db_fields ="(".implode(', ', $fields).", user_id)";	
 							$db_values ="('".implode("', '", $values)."', '".$user_id."')";
-					} 	if($param == 'key'){
-							return $db_fields;}
-		 			elseif($param =='value') {
+				} 
+					if($param == 'key'){
+							if($type == 'array'){
+								return $fields;}
+							elseif($type == 'string'){
+								return $db_fields;}
+		 			}elseif($param =='value') {
+		 					if($type == 'array'){
+								return $values;}
+							elseif($type == 'string') {
 							return $db_values;}
-		 			else {echo "Please enter 2nd parameter!";}
+		 			}elseif ($param == 'tmp')
+		 				 {	return $tmp;}
+
+		 			else {echo "Please enter valid 2nd parameter!";}
 	}
 
+function get_file_path($key, $value){
+		$file_name = $value['name'];
+		$file_extn = strtolower(end(explode('.', $file_name)));
+		$file_path = 'img/profile/' . mt_rand() . '.' . $file_extn;
+		return $file_path;
+}
 
-	function register_user($db){
+function upload_file($db) {
+		$tmp = get_session_data('users','tmp','array', $db);
+		$val = get_session_data('users', 'value','array', $db);
+		foreach($val as $element) {
+				if(strpos($element, 'img/profile') !== false) {
+						$target[] = $element;}
+		}
+		$combined = array_combine($tmp, $target);
+		foreach ($combined as $key => $value) {
+				//move_uploaded_file($key, $value);	
+				$out[] = "move_uploaded_file(".$key.", ".$value.') ';	
+			}	
+			var_dump($out);
+}
+
+
+function register_user($db){
 		$tables = array('users', 'children', 'search_profile', 'times_requested', 'times_offered', 'users_partner', 'user_address');
 		foreach($tables as $table){
-				$fields = get_sql_data($table, 'key', $db);
-				$values = get_sql_data($table, 'value', $db);
+				$fields = get_session_data($table, 'key', 'string', $db);
+				$values = get_session_data($table, 'value', 'string', $db);
 						if($table == 'times_requested' || $table == 'times_offered') {
 								$field = "(".substr($fields[1], 0, -3)."_type, user_id)";
 										foreach($values as $value) {
@@ -69,11 +145,9 @@
 								$query_users = $db->prepare("INSERT INTO $table $fields VALUES $values");
 								$query_users->execute();
 							} 
-					  //echo $out;
-					  //print_r($out);
-					} //var_dump($out);
+					} 
 		}		
-//test function
+
 
 function get_user_id($db) {
 		$user_id = $db->prepare("SELECT user_id FROM users ORDER BY user_id DESC LIMIT 1");
@@ -84,7 +158,28 @@ function get_user_id($db) {
 		return $user_id;
 }
 
-
+function upload_profile_image($db) {
+		foreach($_FILES as $key => $value) {
+				if (isset($_FILES[$key]) === true) {
+						if (empty($_FILES[$key]['name']) === true) {
+						echo 'Wähle bitte ein Foto aus!';	
+					} 	else {
+						$allowed = array('jpg', 'jpeg', 'gif', 'png');
+						$file_name = $_FILES[$key]['name'];
+						$file_extn = strtolower(end(explode('.', $file_name)));
+						$file_temp = $_FILES[$key]['tmp_name'];
+						if(in_array($file_extn, $allowed) === true) {
+										$file_path = "('img/profile/" . substr(md5(time()), 0, 10) . '.' . $file_extn."')";
+										//move_uploaded_file($file_temp, $file_path);
+					} 	else {
+						echo 'Unzulässiger Dateityp. Erlaubt: ';
+						echo implode(', ', $allowed);
+					}
+				}
+			}
+		}
+		return $file_path;
+}
 
 
 function validationCheck($required){
