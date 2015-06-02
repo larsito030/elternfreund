@@ -9,6 +9,10 @@ li      {list-style-type: none;}
 
 a       {text-decoration: none !important;}
 
+.show   {display: block;}
+
+.hide    {display: none;}
+
 
 
 /*===================================================
@@ -53,7 +57,8 @@ a       {text-decoration: none !important;}
 
     
 
-  .li_large   {display: none;}                
+  .li_large   {display: none;
+}                
 
  @media screen and (min-width: 650px) 
               and (max-width: 919px) {
@@ -156,9 +161,17 @@ a       {text-decoration: none !important;}
                       font-size: 1.2rem;
                       border-radius: 7px;}
 
-.modalWrap>h4:hover   {background: rgba(19,55,131,0.7);}
+#loggedin>p    {text-align: left;}
 
-.modalWrap>h4:last-of-type  {background: #92BC21;
+.modalWrap input[type="submit"]  {background: #8cc14c;
+                                  padding: .5rem 2rem;
+                                  color:white;}
+
+.modalWrap input[type="submit"]:hover  {background: }
+
+.modalWrap>h4:last-of-type:hover   {background: rgba(19,55,131,0.7);}
+
+.modalWrap>h4:last-of-type  {background: #3B5998;
                               text-align: center;
                              padding: .5rem 1rem;
                              font-size: 1.5rem;
@@ -166,7 +179,7 @@ a       {text-decoration: none !important;}
                               margin-bottom:  0;
                               margin-top: .5rem;}
 
-.modalWrap>h4:last-of-type:hover    {background: rgba(114,152,29,0.7)}                              
+                            
 
 .modalWrap>h3      {border-top: 1px solid rgba(200,200,200,1);
                     font-weight: 300;
@@ -231,6 +244,8 @@ modalWrap>p#loggedin                         {width:   70% !important;}
 
 #loggedin   {display:   inline-block; 
               width:  100%;}
+
+#login_errors   
 
 
 /*===================================================
@@ -612,6 +627,18 @@ h3#nameTag        {margin-bottom: 0;
 
                                 }
 
+.time_periods               {display:flex;
+                              justify-content: flex-end;
+                             padding: 0.5rem 1rem;
+                            align-items:center;}
+
+#time-periods_1st_row       {display:flex;
+                              justify-content: space-between;
+                             padding: 0 1rem;
+                            alin-items: center !important;}
+
+#time-periods_1st_row>p:first-of-type   {font-size: 1.2rem;}
+
 ul.test     {display: flex;
            flex-wrap:wrap;
             margin-bottom: 0;
@@ -663,6 +690,8 @@ ul.test     {display: flex;
                             
                           }
 
+
+
 .test h2                        {color: white;
                                 text-shadow: 0px 1px 2px #bbb;
 
@@ -672,6 +701,8 @@ ul.test     {display: flex;
                                  margin: 0 auto;
 
                                  }
+
+#last_table      {margin-top: -4px;}
 
 th,td                           {justify-content:center;
                                   box-sizing:border-box;
@@ -703,7 +734,7 @@ span.uk-icon-check-circle         {font-size:9vw;
                                    max-width:60px;
                                     padding: 0;}
 
-.test>li:nth-of-type(5)          {padding: 0.5rem 1rem;}
+
 
 /* MEDIA QUERIES */
 
@@ -799,6 +830,20 @@ span.uk-icon-check-circle         {font-size:9vw;
   REGISTER.PHP
   ==================================================*/  
 
+
+#typeOfParent     {display:flex;
+                   box-sizing:border-box;}
+
+.singleOrCouple   {display: flex !important;
+}
+
+.singleOrCouple>p {min-width: 180px;
+                  font-size: 1.3rem;
+                  padding-top: 0.5rem;
+                  padding-left: 1rem;
+                  padding-right: 4rem;}
+
+
 .regWrap          {background: orange;}
 
 .regSteps         {width: 100%
@@ -874,7 +919,7 @@ span.uk-icon-check-circle         {font-size:9vw;
 
 
 
-  .registerWrap  {max-width:600px;
+  .registerWrap  {max-width:770px;
                   margin: 0 auto;
                   z-index: -3;
                   display: flex;}
@@ -885,27 +930,29 @@ span.uk-icon-check-circle         {font-size:9vw;
                             }
 
 .registerWrap>form>div>div  {box-sizing:border-box;
-                            border: 1px dotted blue;
                             display: flex;
-                            
                             }
 
 
 
-input[type="radio"]   {width: 2em !important;
-                      height: 2em !important;
-                       margin: 1rem 1rem 1rem 2rem;
+input[type="radio"]   {width: 1.5em !important;
+                      height: 1.5em !important;
+                       margin: 1rem 1rem 1rem 0;
                        border: 1px dotted red;
                        }
 
+input[type="radio"] + p {margin-left: 1.5rem;
+                         padding-top: 0.2rem}
+
 .registerWrap>form>div>div>p   {box-sizing:border-box;
-                            border: 1px dotted green;
+
                             font-size: 1.2rem;
                             min-width: 180px;}
 
 .registerWrap fieldset h2   {background: rgb(243,156,18);
                               color: white;
-                              padding-left: 0.5rem;}
+                              padding-left: 0.5rem;
+                              margin: 1.5rem 0;}
 
 .registerWrap fieldset       {width: 100%;}
 
@@ -918,28 +965,30 @@ fieldset                      {margin:0 auto;
                               padding: 0;
                               border: none;}
 
-fieldset ul                 {padding-left: 1rem;
-                                  padding-right: 1rem; }
+
 
 
 fieldset li                  {font-size: 1.2rem;
-                              max-width: 460px;}
+                              width: 100%;}
 
 fieldset input,
 fieldset select          {width:100%;
-                              height: 2rem;
+                              height: 3rem;
                               border-radius: 5px;
                               margin-bottom: 1rem;
-                              margin-right: 1rem;}
+                              margin-right: 0 !important;
+                              font-size: 1.5rem;
+                              padding-left: .5rem;
+                              color: rgba(0,0,0,.8);}
 
 fieldset textarea        {width: 100%;
-                               height: 100px;
+                               height: 150px;
                                border-radius: 5px;}
 
  .address ul              {display: flex;
                            flex-wrap:wrap;
                            max-width: 600px;
-                           margin: 0 auto;}  
+                                        }  
 
 .address>ul>li:first-of-type,
 .address>ul>li:nth-of-type(4)   {width: 100%;
@@ -960,14 +1009,14 @@ fieldset textarea        {width: 100%;
                            min-width: 50px;
                            max-width: 100px;}
 
-#PLZ>input                    {width: 30%;
+#PLZ>input                    {
                               max-width: 100px;
                            margin-right: 5%;}
 
 #location                 {width:30%;
                            min-width: 100px;
                            }
-.address>ul>li:last-of-type  {width: 55%;
+.address>ul>li:last-of-type  {width: 66%;
                               }
 
 .address>ul>li:last-of-type>input  {width: 100% !important;
@@ -1000,6 +1049,18 @@ fieldset textarea        {width: 100%;
                             top: 0;
                             margin: 0.5rem;
                             margin-bottom: 1rem;}
+
+.error_msg                  {display: flex;
+                             width: 100%;
+                             background: rgba(255,0,0,.1);
+                             border: 2px solid red;
+                             padding: 1em;
+                             box-sizing: border-box;
+                             font-size: 1.2rem;
+                             margin-top: 1em;
+                             color: red;
+
+}
 /*
   .regSteps>li:nth-of-type(5),
   .regSteps>li:nth-of-type(6),
@@ -1010,7 +1071,7 @@ fieldset textarea        {width: 100%;
 
 .regSteps         {max-width: 600px;
                    margin: 0 auto;
-                  margin-top: 50px;
+                  margin-top: 10px;
                   height: 95px;}
 
 .regSteps>li      {width: 53px;
@@ -1036,8 +1097,8 @@ fieldset textarea        {width: 100%;
 @media screen and (min-width: 580px) {
   fieldset ul         {display: flex;
                        flex-wrap:wrap;}
-  fieldset li:nth-of-type(even) {width: 360px;}
-  fieldset li:nth-of-type(odd)  {width: 200px;
+  fieldset li:nth-of-type(even) {width: 620px;}
+  fieldset li:nth-of-type(odd)  {width: 280px;
                                 margin: 0;
                                 
                                 
@@ -1058,12 +1119,58 @@ fieldset textarea        {width: 100%;
                                 flex:1;
                                 max-width: 25%;}                         
 }
+#user_address                 {margin-right:0 !important;}
+#partner_details                  {display:none;}
+
+#user_address,
+#user_address>li                   {display:flex;
+                                    flex-direction:row;}
+
+#street                        {width: 81%;}
+
+textarea                      {font-size: 1.5rem;
+                               padding: 0.5rem;
+                               color: rgba(0,0,0,.8);
+                               height: 200px;}
+
+
 /*===================================================
   REGISTER2.PHP
   ==================================================*/ 
+  #croppingModal {
+      position: fixed;
+      z-index: 100;
+      background: white;
+      border-radius: 10px;
+      left: 25%;
+      bottom:10%;
+      padding: 15px;
+      box-shadow: 3px 3px 5px rgba(0,0,0,.3);
+
+}
+
+/*#cropbox  {width: 500px;
+           height:auto;}*/
+
+  #croppingModal>div:last-of-type  {display:flex;
+                                    justify-content: flex-end;}
+
+#cancel_crop        {margin-right: 1rem;
+                     background: #e4354f;}
+
+  #cropPic  {
+            width: 500px;
+            box-sizing: border-box;
+            }
+
+  #cropContainerHeader  {
+     /* width: 200px;
+      height: 150px;*/
+      position:relative;
+  }
   form,
-  .mychild      {max-width: 610px;
-              margin: 0 auto;}
+  .mychild      {max-width: 630px;
+                margin: 0 auto;}
 
   .myChild  {margin-top: 3rem;
              }
@@ -1074,7 +1181,8 @@ fieldset textarea        {width: 100%;
   h4
         {float:right;
                            margin-right: 1rem;
-                           margin-bottom: 1rem;}
+                           /* margin-top: 2rem; */
+                           margin-bottom: 1.3rem;}
 
   h4, a[href$="register.php"]    {display:inline-block;
           margin-top:3px;
@@ -1082,26 +1190,38 @@ fieldset textarea        {width: 100%;
 
 .photoInstruct   {
                   background: rgb(150,150,150);
+                  width: 93%;
                   color:white;
                   padding: 0.5rem 1.5rem;
                   border-radius:5px;
-                  margin: 0 auto;}
+                  margin: 0 auto;
+                  margin-left: 1rem;}
 
 #photo           {overflow: hidden !important;
                   max-height: 282px;}
 
+#photoUpload,
+h4.photoInstruct     {max-width: 620px;
+                      margin: 0 auto;}
+
 #photoUpload>ul   {margin-top:0;}
 
 #photoUpload>ul>li  {margin:0 auto;
+                  margin-bottom: .5rem;
                   width:100%;
                   padding: 0.5rem 0;
                   box-sizing:border-box;
-                  border:1px dotted green;
                   }
+#photoUpload>ul>li:last-of-type {height: 135px;
+                                 overflow: hidden;}
+
+input[value="hochladen"]  {margin-right: 1rem;}
 
 
 
 #photoUpload>ul>li>img  {width:100%;
+                        }
+
                       
                      }
 
@@ -1109,14 +1229,15 @@ fieldset textarea        {width: 100%;
 
 @media screen and (min-width:470px) {
     #photoUpload     {width: 100%;
-                      padding: 0 1rem;
+
 
                       display: flex;
                      justify-content:center;}
     #photoUpload>ul  {width: 30%;
                       
                       flex-direction:column;
-                      padding: .5rem;}
+                      padding: .5rem;
+                      }
     #photoUpload     {display: flex;}
    
   }
@@ -1127,9 +1248,10 @@ fieldset textarea        {width: 100%;
           #photoUpload  {width: 100%;
                           display:flex;}
                 
-                
-
+            
   }
+
+
 
   /*===================================================
   REGISTER3.PHP
@@ -1140,7 +1262,10 @@ fieldset textarea        {width: 100%;
                 display:flex;
                 width:100%;}
 
-  .available    {border-bottom: 1px solid rgb(200,200,200);}              
+  .available    {border-bottom: 1px solid rgb(200,200,200);
+        }      
+
+
 
   .available th,        
  .available td  {
@@ -1155,9 +1280,12 @@ fieldset textarea        {width: 100%;
 
  
   .uk-icon-angle-double-left {margin: 1rem;
-                              margin-top: 0;}
+
+                              margin-top: 2rem;}
 
   .uk-icon-angle-double-left  {font-size: 2rem;}
+
+  #pick_dates             {display: none;}
 
     /*===================================================
   REGISTER4.PHP
@@ -1197,6 +1325,33 @@ fieldset textarea        {width: 100%;
                 }
 #finishReg      {margin-right: 5rem;}
 
-#lastReturn     {margin-top: 0;}
+#lastReturn     {margin-top: 2rem;}
+
+
+    /*===================================================
+  INDEX.PHP
+  ==================================================*/ 
+
+.success_msg   {position: fixed;
+                background: rgba(255,255,255,.8);
+                text-align: center;
+                top: 20%;
+                left:30%;
+                
+                padding: 2rem;
+                font-size: 1.5em;
+                border-radius:10px;
+                box-shadow: 2px 2px 2px grey;}
+
+.activate  {    font-size: 1.3rem;
+                padding: 1rem; }
+
+#yellow_box    {position:   fixed;
+                top:10%;
+                left:20%;
+                width:200px;
+                height:200px;
+                z-index:1000;
+                background: yellow;}
 
 

@@ -8,90 +8,31 @@
 	  	require_once('appvars.php');
   	  	include('../ef_dummy/inc/db_conx.php'); 
 		include('../ef_dummy/inc/header.php'); 
-	  	include('../ef_dummy/inc/multistep.php'); 
-	  //	require_once('../ef_dummy/inc/config.php');
+	  	require_once('../ef_dummy/inc/config.php');
   	    require_once('../ef_dummy/inc/functions.php');
+echo "<pre>";
+print_r($_SESSION['post']);
+$out = get_session_data('users_partner','value','string', $db);
+$out2 = get_session_data('users_partner','key','string', $db);
+$out3 = get_session_data('children','value','string', $db);
+$out4 = get_session_data('children','key','string', $db);
+$out5 = get_session_data('users','value','string', $db);
+$out6 = get_session_data('users','key','string', $db);
+echo $out;
+echo $out2;
+echo $out;
+echo $out2;
+echo "</pre>";
+form_step_process($db);
 
-//$missing = validationCheck($required);
-//arrays of colums which are part of the respective tables...
-
-
-if(/*empty($missing) && */isset($_POST['step4'])){
-		foreach($_POST as $key => $value){
-				if(!empty($value)){
-						$_SESSION['post'][$key] = $_POST[$key];
-										}
-			}
-	}
-		
-
-
-
-	
-	$out = $_SESSION['post'];
-	//print_r($out);
-	//$keys = array_keys($out);
-	//$query = implode(', ', $out);
-	//print_r($query);
-	ini_set('display_errors', 'on');
-	$sql = get_sql_data(children, 'value');
-	echo $sql;
-
-//This functions retrieves all the  keys or values from the SESSION array
-//which are supposed to be inserted into a specific table the name of which gets passed
-//into the function as an argument. Arguments must be passed in as a variable!!!
-// 1st parameter: targeted database table
-// 2nd parameter: either 'key' or 'value'
-
-
-
-
-				
-/*function register_user($db){
-		$tables = array('$users', '$children', '$search_profile', '$times_requested', '$times_offered', '$users_partner', '$user_address');
-		foreach($tables as $table){
-				$fields = get_sql_data($table, 'key');
-				$values = get_sql_data($table, 'value');
-				$query_users = $db->prepare("INSERT INTO ? (?) VALUES (?)");
-				$query_users->execute(array($table, $fields, $values));
-		}
-		
-
-}	
-
-
-//inserting the keys and values of the arays into a query string!
-
-
-		
-			
-
-
-
-
-/*
-try {			$results = $db->query("SELECT profession FROM users WHERE last_name = 'Mertens'");
-				$result = $results->fetchAll(PDO::FETCH_ASSOC);
-				print_r($result);
-	
-} catch (Exception $e) {
-	$e->getMessage();
-}*/
-
-
-			
-
-
-
-
-
-
-//print_r($values);
-
-
+/* $user_id = get_user_id($db, 'last');
+$to = user_data('email', $user_id); 	
+echo $user_id;
+echo $to;    */
 
 ?>
 <div class="reg4 pad1">
+	<?php error_msg();?>
 	<h5>Gleich hast Du's geschafft. Wir brauchen zum Abschluss der Registrierung nur noch Passwort, E-Mail-Adresse und eine Personlausweiskopie von Dir!
 	</h5>
 	<img src="../ef_dummy/img/perso.jpg">
@@ -104,19 +45,18 @@ try {			$results = $db->query("SELECT profession FROM users WHERE last_name = 'M
 			<ul>
 				<li>Bitte wähle ein Passwort</li>
 				<li>
-					<input type="password" name="password">	
+					<input type="password" name="password" value="<?php echo stickyText('password');?>">	
 				</li>
 				<li>Wiederhole bitte Dein Passwort</li>
 				<li>
-					<input type="password" name="password_again">
+					<input type="password" name="password_again" value="<?php echo stickyText('password_again');?>">
 				</li>
 				<li>Bitte gebe noch Deine E-Mail-Adresse an</li>
-				<li><input type="email" name="email"></li>
+				<li><input type="email" name="email" value="<?php echo stickyText('email');?>"></li>
 			</ul>
 	</fieldset>	
-	<input type="submit" name="step4" value="weiter"/>	
+	<input type="submit" name="step4" value="Registrierung abschließen" class="uk-button uk-button-success"/>	
 </form>
-	<a href="../ef_dummy/register4.php"><span id="finishReg"class="uk-button uk-button-success">Registrierung abschließen</span></a>
 	<a href="../ef_dummy/register3.php"><span id="lastReturn" class=uk-icon-angle-double-left></span></a>
 </div>
 

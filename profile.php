@@ -2,56 +2,46 @@
 <!-- HEAD AND NAVBAR -->
 <?php 
 session_start(); 
-$url = "../ef_dummy/profile.php?logout=1";
 
-if(isset($_POST["login"])) {
-    $_SESSION['user'] = "user";
-    }
+include('../ef_dummy/inc/overall/header.php');
+echo "<br>";
+$array_matchee = user_data('offer_type','48');
+$array_user = user_data('offer_type','48');
 
-if(isset($_SESSION['user']))  {
-
-    include('../ef_dummy/inc/headerli.php');
-} else {
-
-    include('../ef_dummy/inc/header.php');
-}
-
-if(isset($_GET["logout"])) {
-    
-    session_destroy();}
-
-$user_id = $_GET["id"];
-
-
-$con = mysqli_connect('','root') or die("unable to connect to database");
-                            mysqli_select_db($con, "elternfreund");
-                            $sql = "SELECT * FROM users LEFT OUTER JOIN children ON users.child_id = children.child_id WHERE user_id = '$user_id'";
-                            $res = mysqli_query($con, $sql);
-                            $row = mysqli_fetch_assoc($res);
-
-
+for($i=1; $i<=21; $i++) {
+                if(in_array($i, $array_user) && in_array($i, $array_matchee)) {
+                    $out .= "yes, ";
+                } else {$out .= "no, ";}
+            }
+            echo $out;
 ?>
+
 
 <!-- profile picture and particulars concerning name, district, profession and frequency of requested childcare -->	
         	
             
             <div class="pp-container">
-                <div class="nameTag"><?php echo $row['first_name'].' und '.$row['name'].'(4)'.'</div>';?>
+                <div class="nameTag"><?php user_data('first_name');?> und <?php user_data('child_name');?> (<?php get_age(); ?>)</div>
             	<ul class="photoAndPart">
-                    <li id="photo"><img src="<?php echo $row['profile_pic'];?>" alt="Mutter mit Kind"></li>
-                   
-                    
+                    <li id="photo"><img src="<?php user_data('profile_pic1');?>" alt="Mutter mit Kind"></li>
                     <ul class="containerParticulars">
-                        <li><h3 id="nameTag">Sabine und Anja(4)</h3></li>
+                        <li><h3 id="nameTag"><?php user_data('first_name');?> und <?php user_data('child_name');?>(<?php get_age(); ?>)</h3></li>
                     	<li class="uk-icon-envelope" id class="test">   </li>
                         <li>Prenzlauer Berg</li>
-                    	<li><?php echo $row['Status'];?></li>
-                    	<li><?php echo $row['profession'];?></li>
-                    	<li>sucht 2-3x/Woche</li> 
-                        <li><div id="Message"><span class="buttonOrange" role="button">Nachricht senden</span><a href="../ef_dummy/search.php" id="backToOverview">zurück zur Übersicht</a></div></li>
-                        <li class="thumb"><img src="../ef_dummy/img/fake3.jpg" alt="Mutter mit Kind"></li>
-                        <li><img src="../ef_dummy/img/kind.jpg" alt="Kind"></li>
-                        <li><img src="../ef_dummy/img/mutter.jpg" alt="Mutter"></li>
+                    	<li><?php user_data('Status')?></li>
+                    	<li><?php user_data('profession')?></li>
+                    	<li>sucht <?php user_data('frequency')?></li> 
+                        <li>
+                            <div id="Message">
+                                <span class="buttonOrange uk-button" role="button">
+                                    <a href="#msg_modal" data-uk-modal>Nachricht senden</a>
+                                </span>
+                                <a href="../ef_dummy/search.php" id="backToOverview">zurück zur Übersicht</a>
+                            </div>
+                        </li>
+                        <li class="thumb"><img src="<?php user_data('profile_pic1');?>" alt="Mutter mit Kind"></li>
+                        <li><img src="<?php user_data('profile_pic2');?>" alt="Kind"></li>
+                        <li><img src="<?php user_data('profile_pic3');?>" alt="Mutter"></li>
                     </ul>   
                 
             	</ul>
@@ -63,43 +53,80 @@ $con = mysqli_connect('','root') or die("unable to connect to database");
                     <li><h2>Euer Matching</h2></li>
                     <li><table>
                             <tr>
-                                <th>08:00</th>
-                                <th>10:00</th>
-                                <th>12:00</th>
-                                <th>14:00</th>
-                                <th>16:00</th>
-                                <th>18:00</th>
-                                <th>20.00</th>
+                                <th>Mo</th>
+                                <th>Di</th>
+                                <th>Mi</th>
+                                <th>Do</th>
+                                <th>Fr</th>
+                                <th>Sa</th>
+                                <th>So</th>
                             </tr>
                         </table></li>
-                    <li><p>Sabine könnte Dein Kind von 12-16:00 Uhr betreuen</p></li>
+                    <li id="time-periods_1st_row">
+                        <p>Sabine könnte Dein Kind zu folgenden Zeiten betreuen!</p>
+                        <p>8-12 Uhr</p>
+                    </li>
                     <li><table>
                             <tr>
-                                 <td></td>
-                                 <td></td>
-                                 <td><span class="uk-icon-check-circle"></span></td>
-                                 <td><span class="uk-icon-check-circle"></span></td>
-                                 <td></td>
-                                 <td></td>
-                                 <td></td>
+                                <?php show_matches_html(1, 7, 'request'); ?>
                              </tr>
                         </table>   </li>
 
-                    <li>Du könntest das Kind von Sabine von 16-18Uhr betreuen </li>
+                    <li class="time_periods">12-16 Uhr</li>
                     <li><table> 
                               <tr>
-                                 <td></td>
-                                 <td></td>
-                                 <td></td>
-                                 <td></td>
-                                 <td><span class="uk-icon-check-circle"></span></td>
-                                 <td></td>
-                                 <td></td>
+                               <?php show_matches_html(8, 14, 'request'); ?>
                               </tr> 
                         </table></li>
+                    <li class="time_periods">16-20 Uhr</li>
+                    <li><table id="last_table">
+                            <tr>
+                              <?php show_matches_html(15, 21, 'request'); ?>
+                             </tr>
+                        </table>   </li>    
                 </ul>
                 
             </div>
+            <div class="matchWrap">
+                <ul class="test">
+                    <li></li>
+                    <li><table>
+                            <tr>
+                                <th>Mo</th>
+                                <th>Di</th>
+                                <th>Mi</th>
+                                <th>Do</th>
+                                <th>Fr</th>
+                                <th>Sa</th>
+                                <th>So</th>
+                            </tr>
+                        </table></li>
+                    <li id="time-periods_1st_row">
+                        <p>Du könntest das Kind von Sabine zu</br> folgenden Zeiten betreuen!</p>
+                        <p>8-12 Uhr</p>
+                    </li>
+                    <li><table>
+                            <tr>
+                                <?php show_matches_html(1, 7, 'offer'); ?>
+                             </tr>
+                        </table>   </li>
+
+                    <li class="time_periods">12-16 Uhr</li>
+                    <li><table> 
+                              <tr>
+                                 <?php show_matches_html(8, 14, 'offer'); ?>
+                              </tr> 
+                        </table></li>
+                    <li class="time_periods">16-20 Uhr</li>
+                    <li><table id="last_table">
+                            <tr>
+                               <?php show_matches_html(15, 21, 'offer'); ?>
+                             </tr>
+                        </table>   </li>    
+                </ul>
+                
+            </div>
+            <!--
             <div class="matchWrap" id="daysofWeek">
                 <ul class="test">
                     <li></li>
@@ -127,7 +154,7 @@ $con = mysqli_connect('','root') or die("unable to connect to database");
                              </tr>
                         </table>   </li>
                 </ul>
-            </div>
+            </div>-->
 
                
             </div> 
@@ -147,7 +174,7 @@ $con = mysqli_connect('','root') or die("unable to connect to database");
                     <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
                 </div>      
             </div>
-            <?php include('../ef_dummy/inc/footer.php'); ?>
+            <?php include('../ef_dummy/inc/overall/footer.php'); ?>
          
 
      <script> 
@@ -163,7 +190,11 @@ $con = mysqli_connect('','root') or die("unable to connect to database");
      $('.containerParticulars img').hover(function(){
          var image = $(this).attr('src');
         $('#photo>img').attr('src', image).width('425px').heigth('282px');  
-        });       
+        });  
+    var send_msg = $('#Message');
+    $(send_msg).on('click', function(){
+
+    })     
     </script>
   </body>
 </html>

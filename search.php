@@ -1,61 +1,14 @@
 <?php
 session_start(); 
-$url = "../ef_dummy/search.php?logout=1";
-
-if(isset($_POST["login"])) {
-    $_SESSION['user'] = "user";
-    }
-
-if(isset($_SESSION['user']))  {
-
-    include('../ef_dummy/inc/headerli.php');
-} else {
-
-    include('../ef_dummy/inc/header.php');
-}
-
-if(isset($_GET["logout"])) {
-    
-    session_destroy();}
+include('../ef_dummy/inc/overall/header.php');
+$rpp = 10;
 
 ?>
+
 <!--navbar-->
- 
-
-
             <div class="outerWrap">
-                <div class="wrapperLeft">
-
-                        <?php
-                            $con = mysqli_connect('','root') or die("unable to connect to database");
-                            mysqli_select_db($con, "elternfreund");
-                            $sql = "SELECT * FROM users LEFT OUTER JOIN children ON users.child_id = children.id";
-                            $res = mysqli_query($con, $sql);
-                            $num = mysqli_num_rows($res);
-                            echo "$num Datensätze gefunden";
-                            while ($row = mysqli_fetch_assoc($res))
-                                {      $birthday = $row['dob'];
-                                       $age = date_create($birthday)->diff(date_create('today'))->y;
-                                       
-                                        echo '<a class="profilePanel" href="../ef_dummy/profile.php?id='.$row['user_id'].'">';
-                                            echo '<div class="pp-photo"><img src="'.$row['profile_pic'].'" alt=""></div>';
-                                            echo '<ul class="pp-textWrap">';
-                                            echo '<ul class="pp-particulars">';
-                                            echo '<li>'.$row['first_name'].' und '.$row['name']. ' '. '('.$age.')'.'</li>';
-                                            echo '<li>Prenzlauer Berg</li>';
-                                            echo '<li>'.$row['Status'].'</li>';
-                                            echo '</ul>';
-                                            echo '<p>'.$row['about_me'].'</p>';
-                                            echo '</ul>';
-                                        echo '</a>';
-
-                                }?>
-
-
-
-
-                        
-                        
+                <div class="wrapperLeft">   
+                <?php get_list_view_html(); ?>  
                 </div>
                 <div class="sidebarSearch">
                     <div id="accordion">
